@@ -1,6 +1,12 @@
 FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
+
+# Use China-accessible Go module proxy to avoid proxy.golang.org timeout
+ENV GOPROXY=https://goproxy.cn,https://goproxy.io,direct
+ENV GONOSUMCHECK=*
+ENV GOFLAGS="-mod=mod"
+
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .

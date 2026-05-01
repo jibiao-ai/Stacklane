@@ -6,11 +6,14 @@ import './i18n';
 import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
-import Models from './pages/Models';
+import ModelManagement from './pages/ModelManagement';
+import GPUManagement from './pages/GPUManagement';
 import Capacity from './pages/Capacity';
 import Events from './pages/Events';
 import Policies from './pages/Policies';
 import DeployWizard from './pages/DeployWizard';
+import Runtimes from './pages/Runtimes';
+import Integrations from './pages/Integrations';
 import Login from './pages/Login';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,16 +31,17 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
+            <Route path="runtimes" element={<Runtimes />} />
+            <Route path="models" element={<ModelManagement />} />
             <Route path="services" element={<Services />} />
-            <Route path="models" element={<Models />} />
+            <Route path="gpu" element={<GPUManagement />} />
             <Route path="capacity" element={<Capacity />} />
-            <Route path="events" element={<Events />} />
             <Route path="policies" element={<Policies />} />
+            <Route path="events" element={<Events />} />
+            <Route path="integrations" element={<Integrations />} />
             <Route path="deploy" element={<DeployWizard />} />
-            <Route path="runtimes" element={<Dashboard />} />
             <Route path="traffic" element={<Dashboard />} />
             <Route path="tenants" element={<Dashboard />} />
-            <Route path="integrations" element={<Dashboard />} />
             <Route path="system" element={<Dashboard />} />
           </Route>
         </Routes>
