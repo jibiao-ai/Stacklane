@@ -14,6 +14,9 @@ import Policies from './pages/Policies';
 import DeployWizard from './pages/DeployWizard';
 import Runtimes from './pages/Runtimes';
 import Integrations from './pages/Integrations';
+import Traffic from './pages/Traffic';
+import Tenants from './pages/Tenants';
+import System from './pages/System';
 import Login from './pages/Login';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -35,14 +38,14 @@ const App: React.FC = () => {
             <Route path="models" element={<ModelManagement />} />
             <Route path="services" element={<Services />} />
             <Route path="gpu" element={<GPUManagement />} />
+            <Route path="traffic" element={<Traffic />} />
             <Route path="capacity" element={<Capacity />} />
             <Route path="policies" element={<Policies />} />
+            <Route path="tenants" element={<Tenants />} />
             <Route path="events" element={<Events />} />
             <Route path="integrations" element={<Integrations />} />
             <Route path="deploy" element={<DeployWizard />} />
-            <Route path="traffic" element={<Dashboard />} />
-            <Route path="tenants" element={<Dashboard />} />
-            <Route path="system" element={<Dashboard />} />
+            <Route path="system" element={<System />} />
           </Route>
         </Routes>
       </BrowserRouter>

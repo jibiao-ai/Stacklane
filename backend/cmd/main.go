@@ -47,6 +47,19 @@ func main() {
 		&model.ModelVersion{},
 		&model.ModelDeployment{},
 		&model.GPUStackConfig{},
+		// Traffic Management Models
+		&model.TrafficRule{},
+		&model.ABTest{},
+		&model.ABTestVariant{},
+		&model.RateLimit{},
+		&model.CircuitBreaker{},
+		// System & Dify Models
+		&model.SystemConfig{},
+		&model.AuditLog{},
+		&model.DifyConfig{},
+		&model.DifyApp{},
+		&model.DifyWorkflow{},
+		&model.DifyWorkflowExecution{},
 	)
 
 	// Seed default data
