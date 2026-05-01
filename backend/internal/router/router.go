@@ -1,6 +1,8 @@
 package router
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
@@ -23,6 +25,10 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 	policyHandler := &handler.PolicyHandler{DB: db}
 	gpuHandler := &handler.GPUHandler{DB: db, GPUStackClient: gpuClient, SyncService: syncSvc}
 	runtimeHandler := &handler.RuntimeHandler{DB: db}
+	trafficHandler := &handler.TrafficHandler{DB: db}
+	tenantHandler := &handler.TenantHandler{DB: db}
+	systemHandler := &handler.SystemHandler{DB: db, StartTime: time.Now()}
+	difyHandler := &handler.DifyHandler{DB: db}
 
 	// Public routes
 	api := r.Group("/api/v1")
@@ -67,7 +73,7 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 		protected.GET("/gpustack/resources", gpuHandler.GetGPUStackResourceSummary)
 
 		// =================== Model Management ===================
-		// Model Catalog & Lifecycle
+
 		protected.GET("/models", modelHandler.List)
 		protected.GET("/models/:id", modelHandler.Get)
 		protected.POST("/models", modelHandler.Create)
@@ -78,7 +84,6 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 		protected.POST("/models/:id/versions", modelHandler.CreateVersion)
 		protected.GET("/models/compatibility", modelHandler.GetCompatibilityMatrix)
 
-		// Model Deployments
 		protected.POST("/models/deploy", modelHandler.DeployModel)
 		protected.GET("/models/deployments", modelHandler.ListDeployments)
 
@@ -109,6 +114,84 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 		protected.POST("/policies", policyHandler.Create)
 		protected.PUT("/policies/:id", policyHandler.Update)
 		protected.DELETE("/policies/:id", policyHandler.Delete)
+
+		// =================== Traffic Management ===================
+		// Traffic Rules
+		protected.GET("/traffic/rules", trafficHandler.ListRules)
+		protected.GET("/traffic/rules/:id", trafficHandler.GetRule)
+		protected.POST("/traffic/rules", trafficHandler.CreateRule)
+		protected.PUT("/traffic/rules/:id", trafficHandler.UpdateRule)
+		protected.DELETE("/traffic/rules/:id", trafficHandler.DeleteRule)
+		protected.POST("/traffic/rules/:id/toggle", trafficHandler.ToggleRule)
+
+		// A/B Testing
+		protected.GET("/traffic/ab-tests", trafficHandler.ListABTests)
+		protected.GET("/traffic/ab-tests/:id", trafficHandler.GetABTest)
+		protected.POST("/traffic/ab-tests", trafficHandler.CreateABTest)
+		protected.PUT("/traffic/ab-tests/:id", trafficHandler.UpdateABTest)
+		protected.POST("/traffic/ab-tests/:id/start", trafficHandler.StartABTest)
+		protected.POST("/traffic/ab-tests/:id/stop", trafficHandler.StopABTest)
+		protected.DELETE("/traffic/ab-tests/:id", trafficHandler.DeleteABTest)
+
+		// Rate Limiting
+		protected.GET("/traffic/rate-limits", trafficHandler.ListRateLimits)
+		protected.POST("/traffic/rate-limits", trafficHandler.CreateRateLimit)
+		protected.PUT("/traffic/rate-limits/:id", trafficHandler.UpdateRateLimit)
+		protected.DELETE("/traffic/rate-limits/:id", trafficHandler.DeleteRateLimit)
+
+		// Circuit Breaker
+		protected.GET("/traffic/circuit-breakers", trafficHandler.ListCircuitBreakers)
+		protected.POST("/traffic/circuit-breakers", trafficHandler.CreateCircuitBreaker)
+		protected.PUT("/traffic/circuit-breakers/:id", trafficHandler.UpdateCircuitBreaker)
+		protected.DELETE("/traffic/circuit-breakers/:id", trafficHandler.DeleteCircuitBreaker)
+		protected.POST("/traffic/circuit-breakers/:id/reset", trafficHandler.ResetCircuitBreaker)
+
+		// Traffic Stats
+		protected.GET("/traffic/stats", trafficHandler.GetTrafficStats)
+
+		// =================== Tenant Management ===================
+		protected.GET("/tenants", tenantHandler.ListTenants)
+		protected.GET("/tenants/stats", tenantHandler.GetTenantStats)
+		protected.GET("/tenants/:id", tenantHandler.GetTenant)
+		protected.POST("/tenants", tenantHandler.CreateTenant)
+		protected.PUT("/tenants/:id", tenantHandler.UpdateTenant)
+		protected.DELETE("/tenants/:id", tenantHandler.DeleteTenant)
+		protected.GET("/tenants/:id/quota", tenantHandler.GetQuota)
+		protected.PUT("/tenants/:id/quota", tenantHandler.UpdateQuota)
+		protected.GET("/tenants/:id/members", tenantHandler.ListMembers)
+		protected.POST("/tenants/:id/members", tenantHandler.AddMember)
+		protected.DELETE("/tenants/:id/members/:member_id", tenantHandler.RemoveMember)
+		protected.PUT("/tenants/:id/members/:member_id/role", tenantHandler.UpdateMemberRole)
+
+		// =================== System Settings ===================
+		protected.GET("/system/info", systemHandler.GetSystemInfo)
+		protected.GET("/system/config", systemHandler.GetConfig)
+		protected.GET("/system/config/:category", systemHandler.GetConfigByCategory)
+		protected.PUT("/system/config", systemHandler.UpdateConfig)
+		protected.PUT("/system/config/batch", systemHandler.BatchUpdateConfig)
+		protected.DELETE("/system/config/:key", systemHandler.DeleteConfig)
+		protected.GET("/system/notifications", systemHandler.GetNotificationSettings)
+		protected.PUT("/system/notifications", systemHandler.UpdateNotificationSettings)
+		protected.GET("/system/audit-logs", systemHandler.GetAuditLogs)
+		protected.GET("/system/backup", systemHandler.GetBackupStatus)
+		protected.POST("/system/backup", systemHandler.TriggerBackup)
+
+		// =================== Dify Integration ===================
+		protected.GET("/dify/connection", difyHandler.GetConnection)
+		protected.POST("/dify/connection", difyHandler.ConfigureConnection)
+		protected.POST("/dify/connection/test", difyHandler.TestConnection)
+		protected.DELETE("/dify/connection", difyHandler.Disconnect)
+		protected.GET("/dify/apps", difyHandler.ListApps)
+		protected.GET("/dify/apps/:id", difyHandler.GetApp)
+		protected.POST("/dify/apps/sync", difyHandler.SyncApps)
+		protected.GET("/dify/workflows", difyHandler.ListWorkflows)
+		protected.GET("/dify/workflows/:id", difyHandler.GetWorkflow)
+		protected.POST("/dify/workflows", difyHandler.CreateWorkflow)
+		protected.PUT("/dify/workflows/:id", difyHandler.UpdateWorkflow)
+		protected.DELETE("/dify/workflows/:id", difyHandler.DeleteWorkflow)
+		protected.POST("/dify/workflows/:id/run", difyHandler.RunWorkflow)
+		protected.GET("/dify/executions", difyHandler.ListExecutions)
+		protected.GET("/dify/stats", difyHandler.GetStats)
 	}
 
 	// WebSocket
