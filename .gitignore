@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build
+frontend/dist/
+backend/stacklane
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+
+# Logs
+*.log
+
+# Docker volumes
+mysql_data/
+redis_data/
+prometheus_data/
+grafana_data/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
