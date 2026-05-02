@@ -60,6 +60,13 @@ func main() {
 		&model.DifyApp{},
 		&model.DifyWorkflow{},
 		&model.DifyWorkflowExecution{},
+		// Agent, Channel, Skill Models
+		&model.Agent{},
+		&model.AgentTemplate{},
+		&model.Channel{},
+		&model.ChannelMessage{},
+		&model.Skill{},
+		&model.SkillExecution{},
 	)
 
 	// Seed default data

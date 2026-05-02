@@ -29,6 +29,9 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 	tenantHandler := &handler.TenantHandler{DB: db}
 	systemHandler := &handler.SystemHandler{DB: db, StartTime: time.Now()}
 	difyHandler := &handler.DifyHandler{DB: db}
+	agentHandler := &handler.AgentHandler{DB: db}
+	channelHandler := &handler.ChannelHandler{DB: db}
+	skillHandler := &handler.SkillHandler{DB: db}
 
 	// Public routes
 	api := r.Group("/api/v1")
@@ -192,6 +195,45 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 		protected.POST("/dify/workflows/:id/run", difyHandler.RunWorkflow)
 		protected.GET("/dify/executions", difyHandler.ListExecutions)
 		protected.GET("/dify/stats", difyHandler.GetStats)
+
+		// =================== Agent Management ===================
+		protected.GET("/agents", agentHandler.ListAgents)
+		protected.GET("/agents/stats", agentHandler.GetAgentStats)
+		protected.GET("/agents/:id", agentHandler.GetAgent)
+		protected.POST("/agents", agentHandler.CreateAgent)
+		protected.PUT("/agents/:id", agentHandler.UpdateAgent)
+		protected.DELETE("/agents/:id", agentHandler.DeleteAgent)
+		protected.POST("/agents/:id/toggle", agentHandler.ToggleAgent)
+		protected.GET("/agents/templates", agentHandler.ListTemplates)
+		protected.GET("/agents/templates/:id", agentHandler.GetTemplate)
+		protected.POST("/agents/templates/:id/install", agentHandler.InstallTemplate)
+		protected.POST("/agents/templates/sync", agentHandler.SyncTemplates)
+
+		// =================== Channel Management ===================
+		protected.GET("/channels", channelHandler.ListChannels)
+		protected.GET("/channels/stats", channelHandler.GetChannelStats)
+		protected.GET("/channels/types", channelHandler.GetSupportedTypes)
+		protected.GET("/channels/:id", channelHandler.GetChannel)
+		protected.POST("/channels", channelHandler.CreateChannel)
+		protected.PUT("/channels/:id", channelHandler.UpdateChannel)
+		protected.DELETE("/channels/:id", channelHandler.DeleteChannel)
+		protected.POST("/channels/:id/connect", channelHandler.ConnectChannel)
+		protected.POST("/channels/:id/disconnect", channelHandler.DisconnectChannel)
+		protected.POST("/channels/:id/test", channelHandler.TestChannel)
+		protected.POST("/channels/:id/bind-agent", channelHandler.BindAgent)
+		protected.GET("/channels/:id/messages", channelHandler.ListMessages)
+
+		// =================== Skill Management ===================
+		protected.GET("/skills", skillHandler.ListSkills)
+		protected.GET("/skills/stats", skillHandler.GetSkillStats)
+		protected.GET("/skills/:id", skillHandler.GetSkill)
+		protected.POST("/skills", skillHandler.CreateSkill)
+		protected.PUT("/skills/:id", skillHandler.UpdateSkill)
+		protected.DELETE("/skills/:id", skillHandler.DeleteSkill)
+		protected.POST("/skills/:id/toggle", skillHandler.ToggleSkill)
+		protected.POST("/skills/:id/execute", skillHandler.ExecuteSkill)
+		protected.GET("/skills/executions", skillHandler.ListExecutions)
+		protected.POST("/skills/sync", skillHandler.SyncBuiltinSkills)
 	}
 
 	// WebSocket
