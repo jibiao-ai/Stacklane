@@ -34,6 +34,10 @@ import {
   Settings as SystemIcon,
   Notifications as AlertIcon,
   Search as SearchIcon,
+  SmartToy as AgentIcon,
+  Forum as ChannelIcon,
+  AutoFixHigh as SkillIcon,
+  Hub as DifyIcon,
 } from '@mui/icons-material';
 
 const DRAWER_WIDTH = 240;
@@ -63,6 +67,10 @@ const MainLayout: React.FC = () => {
     { key: 'policies', path: '/policies', icon: <PolicyIcon /> },
     { key: 'tenants', path: '/tenants', icon: <TenantIcon /> },
     { key: 'events', path: '/events', icon: <EventIcon /> },
+    { key: 'agents', path: '/agents', icon: <AgentIcon /> },
+    { key: 'channels', path: '/channels', icon: <ChannelIcon /> },
+    { key: 'skills', path: '/skills', icon: <SkillIcon /> },
+    { key: 'dify', path: '/dify', icon: <DifyIcon /> },
     { key: 'integrations', path: '/integrations', icon: <IntegrationIcon /> },
     { key: 'system', path: '/system', icon: <SystemIcon /> },
   ];

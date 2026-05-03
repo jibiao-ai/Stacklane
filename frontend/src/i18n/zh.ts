@@ -32,6 +32,7 @@ export default {
     agents: '智能体',
     channels: '渠道管理',
     skills: '技能管理',
+    dify: 'Dify 集成',
   },
   dashboard: {
     title: '平台概览',
