@@ -20,6 +20,7 @@ import System from './pages/System';
 import Agents from './pages/Agents';
 import Channels from './pages/Channels';
 import Skills from './pages/Skills';
+import Dify from './pages/Dify';
 import Login from './pages/Login';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             <Route path="agents" element={<Agents />} />
             <Route path="channels" element={<Channels />} />
             <Route path="skills" element={<Skills />} />
+            <Route path="dify" element={<Dify />} />
             <Route path="deploy" element={<DeployWizard />} />
             <Route path="system" element={<System />} />
           </Route>

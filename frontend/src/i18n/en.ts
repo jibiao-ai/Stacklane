@@ -32,6 +32,7 @@ export default {
     agents: 'Agents',
     channels: 'Channels',
     skills: 'Skills',
+    dify: 'Dify',
   },
   dashboard: {
     title: 'Platform Overview',
