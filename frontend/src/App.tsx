@@ -21,6 +21,8 @@ import Agents from './pages/Agents';
 import Channels from './pages/Channels';
 import Skills from './pages/Skills';
 import Dify from './pages/Dify';
+import Chat from './pages/Chat';
+import Workflow from './pages/Workflow';
 import Login from './pages/Login';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,22 +40,25 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="agents" element={<Agents />} />
+            <Route path="workflow" element={<Workflow />} />
+            <Route path="skills" element={<Skills />} />
+            <Route path="scheduled-tasks" element={<Skills />} />
+            <Route path="gpu" element={<GPUManagement />} />
             <Route path="runtimes" element={<Runtimes />} />
             <Route path="models" element={<ModelManagement />} />
             <Route path="services" element={<Services />} />
-            <Route path="gpu" element={<GPUManagement />} />
+            <Route path="channels" element={<Channels />} />
+            <Route path="dify" element={<Dify />} />
+            <Route path="integrations" element={<Integrations />} />
             <Route path="traffic" element={<Traffic />} />
             <Route path="capacity" element={<Capacity />} />
             <Route path="policies" element={<Policies />} />
             <Route path="tenants" element={<Tenants />} />
             <Route path="events" element={<Events />} />
-            <Route path="integrations" element={<Integrations />} />
-            <Route path="agents" element={<Agents />} />
-            <Route path="channels" element={<Channels />} />
-            <Route path="skills" element={<Skills />} />
-            <Route path="dify" element={<Dify />} />
-            <Route path="deploy" element={<DeployWizard />} />
             <Route path="system" element={<System />} />
+            <Route path="deploy" element={<DeployWizard />} />
           </Route>
         </Routes>
       </BrowserRouter>
