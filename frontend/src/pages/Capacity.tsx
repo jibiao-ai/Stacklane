@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography, Card, CardContent, Grid, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress } from '@mui/material';
+import { Box, Typography, Card, CardContent, Grid, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress, Button, Snackbar, Alert, IconButton, Tooltip } from '@mui/material';
+import { Refresh as RefreshIcon, Visibility as ViewIcon } from '@mui/icons-material';
 
 const mockClusters = [
-  { id: 1, name: 'us-east-1', region: 'US East', status: 'active', nodes: 8 },
-  { id: 2, name: 'us-west-2', region: 'US West', status: 'active', nodes: 5 },
-  { id: 3, name: 'cn-beijing', region: 'China North', status: 'active', nodes: 6 },
+  { id: 1, name: 'us-east-1', region: 'US East', status: 'active', nodes: 8, totalGPU: 64, usedGPU: 48 },
+  { id: 2, name: 'us-west-2', region: 'US West', status: 'active', nodes: 5, totalGPU: 40, usedGPU: 32 },
+  { id: 3, name: 'cn-beijing', region: 'China North', status: 'active', nodes: 6, totalGPU: 36, usedGPU: 20 },
 ];
 
 const mockNodes = [
@@ -18,44 +19,80 @@ const mockNodes = [
 
 const Capacity: React.FC = () => {
   const { t } = useTranslation();
+  const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
+
   const getUtilColor = (v: number) => { if (v > 90) return 'error'; if (v > 70) return 'warning'; return 'primary'; };
+
+  const filteredNodes = selectedCluster ? mockNodes.filter(n => n.cluster === selectedCluster) : mockNodes;
+
+  const handleRefresh = () => {
+    setSnackbar({ open: true, message: 'Capacity data refreshed from GPUStack' });
+  };
 
   return (
     <Box>
-      <Typography variant="h2" sx={{ mb: 3 }}>{t('capacity.title')}</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h2">{t('capacity.title')}</Typography>
+        <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleRefresh}>{t('common.refresh')}</Button>
+      </Box>
+
+      {/* Cluster cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {mockClusters.map((c) => (
           <Grid item xs={12} md={4} key={c.id}>
-            <Card>
+            <Card
+              sx={{
+                cursor: 'pointer',
+                border: selectedCluster === c.name ? '2px solid #165DFF' : '1px solid transparent',
+                transition: 'all 0.2s',
+                '&:hover': { borderColor: '#165DFF', boxShadow: '0 2px 8px rgba(22, 93, 255, 0.12)' },
+              }}
+              onClick={() => setSelectedCluster(selectedCluster === c.name ? null : c.name)}
+            >
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Typography variant="h5">{c.name}</Typography>
                   <Chip label={c.status} size="small" color="success" />
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{c.region}</Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>{t('capacity.nodeCount')}: {c.nodes}</Typography>
+                <Box sx={{ mt: 1.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2">GPU: {c.usedGPU}/{c.totalGPU}</Typography>
+                    <Typography variant="body2">{Math.round(c.usedGPU / c.totalGPU * 100)}%</Typography>
+                  </Box>
+                  <LinearProgress variant="determinate" value={c.usedGPU / c.totalGPU * 100} color={getUtilColor(c.usedGPU / c.totalGPU * 100) as any} sx={{ height: 6, borderRadius: 3 }} />
+                </Box>
+                <Typography variant="body2" sx={{ mt: 1 }}>Nodes: {c.nodes}</Typography>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
+
+      {/* Nodes table */}
       <Card>
         <CardContent>
-          <Typography variant="h6" sx={{ mb: 2 }}>{t('capacity.nodes')}</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6">
+              {t('capacity.nodeDetails')} {selectedCluster && <Chip label={selectedCluster} size="small" onDelete={() => setSelectedCluster(null)} sx={{ ml: 1 }} />}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">{filteredNodes.length} nodes</Typography>
+          </Box>
           <TableContainer>
             <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>{t('common.name')}</TableCell>
-                  <TableCell>{t('capacity.gpuType')}</TableCell>
-                  <TableCell>{t('capacity.gpuCount')}</TableCell>
-                  <TableCell>{t('capacity.utilization')}</TableCell>
+                  <TableCell>GPU Type</TableCell>
+                  <TableCell>Count</TableCell>
+                  <TableCell>Utilization</TableCell>
                   <TableCell>{t('common.status')}</TableCell>
-                  <TableCell>Cluster</TableCell>
+                  <TableCell>{t('capacity.clusters')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {mockNodes.map((n) => (
+                {filteredNodes.map((n) => (
                   <TableRow key={n.id} hover>
                     <TableCell sx={{ fontFamily: '"JetBrains Mono", monospace' }}>{n.name}</TableCell>
                     <TableCell>{n.gpuType}</TableCell>
@@ -75,6 +112,10 @@ const Capacity: React.FC = () => {
           </TableContainer>
         </CardContent>
       </Card>
+
+      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ ...snackbar, open: false })} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert severity="success" onClose={() => setSnackbar({ ...snackbar, open: false })}>{snackbar.message}</Alert>
+      </Snackbar>
     </Box>
   );
 };
