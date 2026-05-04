@@ -37,3 +37,7 @@ grafana_data/
 *.dylib
 *.test
 *.out
+screenshot*.mjs
+package.json
+package-lock.json
+docs/logo-256.png
