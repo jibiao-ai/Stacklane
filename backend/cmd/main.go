@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
@@ -107,6 +108,31 @@ func seedDefaultData(db *gorm.DB) {
 	db.Model(&model.Tenant{}).Count(&tenantCount)
 	if tenantCount == 0 {
 		db.Create(&model.Tenant{Name: "default", Quota: 100, Status: "active"})
+	}
+
+	// Seed default admin user (admin / Admin@2026!)
+	var userCount int64
+	db.Model(&model.User{}).Count(&userCount)
+	if userCount == 0 {
+		defaultPassword := "Admin@2026!"
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(defaultPassword), bcrypt.DefaultCost)
+		if err != nil {
+			log.Printf("[Stacklane] WARNING: Failed to hash default admin password: %v", err)
+		} else {
+			adminUser := model.User{
+				Username: "admin",
+				Email:    "admin@stacklane.io",
+				Password: string(hashedPassword),
+				Role:     "admin",
+				TenantID: 1,
+				Locale:   "zh",
+			}
+			if err := db.Create(&adminUser).Error; err != nil {
+				log.Printf("[Stacklane] WARNING: Failed to create default admin user: %v", err)
+			} else {
+				log.Println("[Stacklane] Seeded default admin user (admin / Admin@2026!)")
+			}
+		}
 	}
 
 	// Seed default runtimes (vLLM, GPUStack, llama.cpp, TensorRT-LLM)

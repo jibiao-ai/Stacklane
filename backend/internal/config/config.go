@@ -21,11 +21,11 @@ func Load() *Config {
 		DBHost:     getEnv("DB_HOST", "localhost"),
 		DBPort:     getEnv("DB_PORT", "3306"),
 		DBUser:     getEnv("DB_USER", "stacklane"),
-		DBPassword: getEnv("DB_PASSWORD", "stacklane123"),
+		DBPassword: getEnv("DB_PASSWORD", "Stack@Db2026!"),
 		DBName:     getEnv("DB_NAME", "stacklane"),
 		RedisAddr:  getEnv("REDIS_ADDR", "localhost:6379"),
-		RedisPass:  getEnv("REDIS_PASSWORD", ""),
-		JWTSecret:  getEnv("JWT_SECRET", "stacklane-secret-key"),
+		RedisPass:  getEnv("REDIS_PASSWORD", "Redis@Stack2026!"),
+		JWTSecret:  getEnv("JWT_SECRET", "Jwt@Stacklane#Secret2026!"),
 		ServerPort: getEnv("SERVER_PORT", "8080"),
 	}
 }
