@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: stacklane-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_PASSWORD: Root@Stack2026!
       MYSQL_DATABASE: stacklane
       MYSQL_USER: stacklane
-      MYSQL_PASSWORD: stacklane123
+      MYSQL_PASSWORD: Stack@Db2026!
     ports:
       - "3306:3306"
     volumes:
@@ -22,6 +22,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: stacklane-redis
+    command: redis-server --requirepass "Redis@Stack2026!"
     ports:
       - "6379:6379"
     volumes:
@@ -36,10 +37,11 @@ services:
       DB_HOST: mysql
       DB_PORT: "3306"
       DB_USER: stacklane
-      DB_PASSWORD: stacklane123
+      DB_PASSWORD: Stack@Db2026!
       DB_NAME: stacklane
       REDIS_ADDR: redis:6379
-      JWT_SECRET: stacklane-prod-secret-key-2026
+      REDIS_PASSWORD: Redis@Stack2026!
+      JWT_SECRET: Jwt@Stacklane#Secret2026!
       SERVER_PORT: "8080"
       GPUSTACK_URL: ${GPUSTACK_URL:-}
       GPUSTACK_API_KEY: ${GPUSTACK_API_KEY:-}
@@ -79,7 +81,7 @@ services:
     image: grafana/grafana:latest
     container_name: stacklane-grafana
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_SECURITY_ADMIN_PASSWORD: Grafana@Stack2026!
     ports:
       - "3001:3000"
     volumes:

@@ -442,6 +442,20 @@ const Login: React.FC = () => {
               </Box>
             ))}
           </Box>
+
+          {/* Default credentials hint */}
+          <Box sx={{
+            mt: 3, p: 2, borderRadius: 2,
+            background: '#F7F8FA',
+            border: '1px solid #E5E6EB',
+          }}>
+            <Typography sx={{ fontSize: '0.75rem', color: '#86909C', textAlign: 'center', mb: 0.5 }}>
+              {t('auth.defaultCredentials', '默认管理员账号')}
+            </Typography>
+            <Typography sx={{ fontSize: '0.8rem', color: '#4E5969', textAlign: 'center', fontFamily: 'monospace' }}>
+              admin / Admin@2026!
+            </Typography>
+          </Box>
         </Box>
 
         {/* Bottom version */}

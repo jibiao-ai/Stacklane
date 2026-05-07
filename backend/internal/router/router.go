@@ -38,6 +38,7 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 	{
 		api.POST("/auth/login", authHandler.Login)
 		api.POST("/auth/register", authHandler.Register)
+		api.GET("/auth/password-policy", authHandler.GetPasswordPolicy)
 		api.GET("/health", func(c *gin.Context) {
 			c.JSON(200, gin.H{"status": "ok", "service": "stacklane", "version": "1.0.0"})
 		})
@@ -49,6 +50,7 @@ func Setup(db *gorm.DB, jwtSecret string, hub *ws.Hub, gpuClient *gpustack.Clien
 	{
 		// User
 		protected.GET("/auth/profile", authHandler.GetProfile)
+		protected.PUT("/auth/password", authHandler.ChangePassword)
 
 		// Dashboard
 		protected.GET("/dashboard/stats", dashHandler.GetStats)
